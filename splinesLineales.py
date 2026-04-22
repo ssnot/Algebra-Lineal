@@ -1,11 +1,5 @@
 import matplotlib.pyplot as plt
-import numpy as np
-from Funciones import F
-"""
-Si no tienen las librerias, instálenlas con estos comandos en el cmd:
-pip install matplotlib
-pip install numpy
-"""
+from funciones.funcLineales import F
 
 coordsX = [0, 1, 4, 9]
 coordsY = [0, 1, 16, 81]
