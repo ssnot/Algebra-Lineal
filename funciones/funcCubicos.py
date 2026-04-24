@@ -1,7 +1,7 @@
 import numpy as np
 
 def interpolacion_lagrange(x_puntos, y_puntos, x_val):
-    """Calcula el valor de Lagrange en un punto x_val."""
+    # Calcula el valor de Lagrange en un punto x_val.
     n = len(x_puntos)
     resultado = 0
     for i in range(n):
@@ -15,31 +15,33 @@ def interpolacion_lagrange(x_puntos, y_puntos, x_val):
 def calcular_splines(x, y):
     n = len(x) - 1
     h = np.diff(x)
-    
-    # Configuración del sistema matricial A*c = B
-    A = np.zeros((n + 1, n + 1))
+   
+    # Configuración del sistema matricial M*g = b
+    M = np.zeros((n + 1, n + 1))
     B = np.zeros(n + 1)
-    
+   
     # Condiciones para Spline Natural (Segunda derivada en extremos = 0)
-    A[0, 0] = 1
-    A[n, n] = 1
-    
+    M[0, 0] = 1
+    M[n, n] = 1
+   
     for i in range(1, n):
-        A[i, i-1] = h[i-1]
-        A[i, i] = 2 * (h[i-1] + h[i])
-        A[i, i+1] = h[i]
-        B[i] = 3 * ((y[i+1] - y[i]) / h[i] - (y[i] - y[i-1]) / h[i-1])
-    
-    # Resolver para c
-    c = np.linalg.solve(A, B)
-    
-    # Calcular coeficientes a, b, d
-    a = y[:-1]
-    b = np.zeros(n)
-    d = np.zeros(n)
-    
+        M[i, i-1] = h[i-1]
+        M[i, i] = 2 * (h[i-1] + h[i])
+        M[i, i+1] = h[i]
+        B[i] = 6 * ((y[i+1] - y[i]) / h[i] - (y[i] - y[i-1]) / h[i-1])
+   
+    # Resolver para g
+    g = np.linalg.solve(M, B)
+   
+    # Calcular coeficientes a, b, c, d
+    a = np.zeros(n)
+    b = np.zeros(n+1)
+    c = np.zeros(n)
+    d = y[:-1]
+
     for i in range(n):
-        b[i] = (y[i+1] - y[i])/h[i] - h[i]*(2*c[i] + c[i+1])/3
-        d[i] = (c[i+1] - c[i]) / (3 * h[i])
-        
-    return a, b, c[:-1], d
+        a[i] = (g[i+1] - g[i]) / (6 * h[i])
+        b[i] = g[i]/2
+        c[i] = (y[i+1] - y[i])/h[i] - h[i]*(2*g[i] + g[i+1])/6
+       
+    return a, b[:-1], c, d

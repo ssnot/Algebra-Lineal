@@ -3,7 +3,7 @@ import numpy as np
 from funciones.funcCubicos import calcular_splines, interpolacion_lagrange
 
 # Datos de prueba (puedes cambiarlos)
-coordsX = np.array([0, 1, 4, 9])
+coordsX = np.array([0, 1, 2, 3])
 coordsY = np.array([0, 1, 16, 81])
 
 # 1. Calcular Coeficientes del Spline
@@ -11,9 +11,9 @@ a, b, c, d = calcular_splines(coordsX, coordsY)
 
 # 2. Mostrar Reglas de Correspondencia
 print("--- Ecuaciones de los Splines por Intervalo ---")
-for i in range(len(a)):
+for i in range(len(d)):
     print(f"Intervalo [{coordsX[i]}, {coordsX[i+1]}]:")
-    print(f"S_{i}(x) = {a[i]:.2f} + {b[i]:.2f}(x-{coordsX[i]}) + {c[i]:.2f}(x-{coordsX[i]})^2 + {d[i]:.2f}(x-{coordsX[i]})^3\n")
+    print(f"S_{i}(x) = {a[i]:.2f}(x-{coordsX[i]})^3 + {b[i]:.2f}(x-{coordsX[i]})^2 + {c[i]:.2f}(x-{coordsX[i]}) + {d[i]:.2f}\n")
 
 # 3. Preparar datos para graficar
 x_grafica = np.linspace(min(coordsX), max(coordsX), 200)
@@ -28,7 +28,7 @@ for val in x_grafica:
             idx = i
             break
     dx = val - coordsX[idx]
-    y_spline.append(a[idx] + b[idx]*dx + c[idx]*dx**2 + d[idx]*dx**3)
+    y_spline.append(a[idx]*dx**3 + b[idx]*dx**2 + c[idx]*dx + d[idx])
 
 plt.figure(figsize=(10, 6))
 plt.plot(x_grafica, y_spline, label='Spline Cúbico', color='blue', linewidth=2)
